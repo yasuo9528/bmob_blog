@@ -1,23 +1,27 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <!-- <add-blog></add-blog> -->
+    <!-- <show-blogs></show-blogs> -->
+    <blog-header></blog-header>
+    <router-view></router-view> 
+    <hello></hello>
   </div>
 </template>
 
 <script>
+import AddBlog from './components/AddBlog'
+import Hello from './components/Hello'
+import ShowBlogs from './components/ShowBlogs'
+import BlogHeader from './components/BlogHeader'
+
 export default {
-  name: 'App'
+  name: 'app',
+  components: {
+    AddBlog,ShowBlogs,BlogHeader,Hello
+  }
 }
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
