@@ -1,11 +1,12 @@
 <template>
 	<div id="single-blog">
-		<h1>{{blog.title}}</h1>
-		<article>{{blog.content}}</article>
-		<p>作者: {{blog.author}}</p>
+		<h1>{{blogTitle}}</h1>
+		<article>{{blogContent}}</article>
+		<p>作者: {{blogAuthor}}</p>
+		<p>创作时间: {{blogCreatedAt}}</p>
 		<p>分类:</p>
 		<ul>
-			<li v-for="category in blog.categories">
+			<li v-for="category in blogCategories">
 				{{category}}
 			</li>
 		</ul>
@@ -15,32 +16,35 @@
 </template>
 
 <script>
+	import stroe from 'vuex'
+	import { mapState,mapActions} from 'vuex'
 	export default{
 		name:"single-blog",
 		data(){
 			return{
-				id:this.$route.params.id,
-				blog:{}
+				id:this.$route.params.id
 			}
-		},
-		created(){
-			this.$http.get('https://vuedemo-b1233.firebaseio.com/posts/' + this.id + ".json")
-				.then(function(data){
-					console.log(data);
-					return data.json();
-					// this.blog = data.body;
-				})
-				.then(function(data){
-					this.blog = data;
-				})
 		},
 		methods:{
-			deleteSingleBlog(){
-				this.$http.delete("https://vuedemo-b1233.firebaseio.com/posts/" + this.id + ".json")
-									.then(response =>{
-										this.$router.push({path:'/'})
-									})
-			}
+			...mapActions([
+				'getNews'
+			])
+		},
+		computed:{
+			...mapState([
+				'blogID',
+				'blogTitle',
+				'blogContent',
+				'blogCategories',
+				'blogAuthor',
+				'blogCreatedAt'
+			])
+		},
+		created(){
+			this.$store.dispatch('getNews',this.id)
+		},
+		methods:{
+			
 		}
 	}
 </script>

@@ -2,60 +2,47 @@
   <div v-theme:column="'narrow'" id="show-blogs">
     <h1>博客总览</h1>
     <input type="text" v-model="search" placeholder="搜索">
-    <div v-for="blog in filteredBlogs" class="single-blog">
+    <div v-for="(blog,index) in getCont" :key="index" class="single-blog">
     	<router-link v-bind:to="'/blog/' + blog.id">
-        <h2 v-rainbow>{{blog.title | to-uppercase}}</h2>
+        <h2 v-rainbow>{{blog.attributes.newTitle | to-uppercase}}</h2>
       </router-link>
 
     	<article>
-    		{{blog.content | snippet}}
+    		{{blog.attributes.newContent | snippet}}
     	</article>
+			<p v-for="(f,index) in blog.attributes.newCategories" :key="index">
+					{{f}}
+			</p>
     </div>
   </div>
 </template>
 
 <script>
-
+import stroe from 'vuex'
+import { mapState,mapActions} from 'vuex'
 export default {
   name: 'show-blogs',
   data(){
   	return {
-  		blogs:[],
   		search:""
   	}
   },
-  created(){
-  	this.$http.get('https://vuedemo-b1233.firebaseio.com/posts.json')
-  		.then(function(data){
-        return data.json()
-  			// console.log(data.json());
-  			// this.blogs = data.body.slice(0,10);
-  			// console.log(this.blogs);
-  		})
-      .then(function(data){
-        var blogsArray = [];
-        for(let key in data){
-          // console.log(key);
-          // console.log(data[key]);
-          data[key].id = key;
-          blogsArray.push(data[key]);
-        }
-        // console.log(blogsArray);
-        this.blogs = blogsArray;
-        console.log(this.blogs);
-      })
-  },
+	methods:{
+			...mapActions([
+				'getallState'
+			])
+	},
   computed:{
-  	filteredBlogs:function(){
-  		return this.blogs.filter((blog) =>{
-  			return blog.title.match(this.search);
-  		})
-  	}
+			...mapState([
+					'getCont'
+			])
   },
+	created(){
+			this.$store.dispatch('getallState',{
+				tabName:'news'
+			})
+	},
   filters:{
-  	// "to-uppercase":function(value){
-  	// 	return value.toUpperCase();
-  	// }
   	toUppercase(value){
   		return value.toUpperCase();
   	}
