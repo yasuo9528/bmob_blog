@@ -1,12 +1,12 @@
 <template>
   <div id="add-blog">
     <h2>添加博客</h2>
-    <form v-if="!submmited">
+    <form>
       <label>博客标题</label>
-      <input type="text" v-model="blog.title" required />
+      <input type="text" v-model="blog.pushTitle" required />
 
       <label>博客内容</label>
-      <textarea v-model="blog.content"></textarea>
+      <textarea v-model="blog.pushCont"></textarea>
 
       <div id="checkboxes">
         <label>Vue.js</label>
@@ -24,30 +24,13 @@
           {{author}}
         </option>
       </select>
-      <button v-on:click.prevent="post">添加博客</button>
+      <button @click="addNews">添加博客</button>
     </form>
-
-    <div v-if="submmited">
-      <h3>您的博客发布成功!</h3>
-    </div>
-
-    <div id="preview">
-      <h3>博客总览</h3>
-      <p>博客标题: {{blog.title}}</p>
-      <p>博客内容:</p>
-      <p>{{blog.content}}</p>
-      <p>博客分类:</p>
-      <ul>
-        <li v-for="category in blog.categories">
-          {{category}}
-        </li>
-      </ul>
-      <p>作者: {{blog.author}}</p>
-    </div>
   </div>
 </template>
 
 <script>
+import { store,mapState } from 'vuex'
 export default {
   // https://jsonplaceholder.typicode.com/
   // https://jsonplaceholder.typicode.com/posts
@@ -55,23 +38,27 @@ export default {
   data () {
     return {
       blog:{
-        title:"",
-        content:"",
+        pushTitle:"",
+        pushCont:"",
         categories:[],
         author:""
       },
       authors:["Hemiah","Henry","Bucky"],
-      submmited:false
     }
   },
+	computed:{
+			...mapState([
+					'pushShow'
+			])
+	},
   methods:{
-    post:function(){
-      this.$http.post("https://vuedemo-b1233.firebaseio.com/posts.json",this.blog)
-          .then(function(data){
-            console.log(data);
-            this.submmited = true;
-          });
-    }
+			// 发布
+			addNews:function(){
+					this.$store.dispatch('pushNews',[this.blog.pushTitle,this.blog.pushCont,this.blog.categories,this.blog.author])
+					.then(res=>{
+						this.$router.push({path:'/'}); 
+					})
+			}
   }
 }
 </script>

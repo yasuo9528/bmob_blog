@@ -10,7 +10,7 @@
 				{{category}}
 			</li>
 		</ul>
-		<button @click="deleteSingleBlog()">删除</button>
+		<button @click="removeNew(id)">删除</button>
 		<router-link :to="'/edit/' + id">编辑</router-link>
 	</div>
 </template>
@@ -25,11 +25,11 @@
 				id:this.$route.params.id
 			}
 		},
-		methods:{
+		/* methods:{
 			...mapActions([
 				'getNews'
 			])
-		},
+		}, */
 		computed:{
 			...mapState([
 				'blogID',
@@ -41,10 +41,15 @@
 			])
 		},
 		created(){
-			this.$store.dispatch('getNews',this.id)
+			this.$store.dispatch('getNews',this.id);
 		},
 		methods:{
-			
+			// 删除文章
+			removeNew: function(type){
+				this.$store.dispatch('removeNew',type).then(res=>{
+					this.$router.push({path:'/'}); 
+				})
+			}
 		}
 	}
 </script>
@@ -56,4 +61,5 @@
 		background: #eee;
 		border: 1px dotted #aaa;
 	}
+	[v-cloak]{ display:none}
 </style>

@@ -4,11 +4,11 @@
     <input type="text" v-model="search" placeholder="搜索">
     <div v-for="(blog,index) in getCont" :key="index" class="single-blog">
     	<router-link v-bind:to="'/blog/' + blog.id">
-        <h2 v-rainbow>{{blog.attributes.newTitle | to-uppercase}}</h2>
+        <h2 v-rainbow>{{blog.attributes.newTitle}}</h2>
       </router-link>
 
     	<article>
-    		{{blog.attributes.newContent | snippet}}
+    		{{blog.attributes.newContent}}
     	</article>
 			<p v-for="(f,index) in blog.attributes.newCategories" :key="index">
 					{{f}}
@@ -28,9 +28,9 @@ export default {
   	}
   },
 	methods:{
-			...mapActions([
+			/* ...mapActions([
 				'getallState'
-			])
+			]) */
 	},
   computed:{
 			...mapState([

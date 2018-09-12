@@ -1,86 +1,90 @@
 <template>
   <div id="add-blog">
     <h2>编辑博客</h2>
-    <form v-if="!submmited">
+    <form>
       <label>博客标题</label>
-      <input type="text" v-model="blog.title" required />
+      <input type="text" v-model="title" required />
 
       <label>博客内容</label>
-      <textarea v-model="blog.content"></textarea>
+      <textarea v-model="content"></textarea>
 
       <div id="checkboxes">
         <label>Vue.js</label>
-        <input type="checkbox" value="Vue.js" v-model="blog.categories">
+        <input type="checkbox" value="Vue.js" v-model="categories">
         <label>Node.js</label>
-        <input type="checkbox" value="Node.js" v-model="blog.categories">
+        <input type="checkbox" value="Node.js" v-model="categories">
         <label>React.js</label>
-        <input type="checkbox" value="React.js" v-model="blog.categories">
+        <input type="checkbox" value="React.js" v-model="categories">
         <label>Angular4</label>
-        <input type="checkbox" value="Angular4" v-model="blog.categories">
+        <input type="checkbox" value="Angular4" v-model="categories">
       </div>
       <label>作者:</label>
-      <select v-model="blog.author">
+      <select v-model="author">
         <option v-for="author in authors">
           {{author}}
         </option>
       </select>
-      <button v-on:click.prevent="post">编辑博客</button>
+      <button @click="editMod()">编辑博客</button>
     </form>
-
-    <div v-if="submmited">
-      <h3>您的博客发布成功!</h3>
-    </div>
-
-    <div id="preview">
-      <h3>博客总览</h3>
-      <p>博客标题: {{blog.title}}</p>
-      <p>博客内容:</p>
-      <p>{{blog.content}}</p>
-      <p>博客分类:</p>
-      <ul>
-        <li v-for="category in blog.categories">
-          {{category}}
-        </li>
-      </ul>
-      <p>作者: {{blog.author}}</p>
-    </div>
   </div>
 </template>
 
 <script>
-export default {
-  // https://jsonplaceholder.typicode.com/
-  // https://jsonplaceholder.typicode.com/posts
-  name: 'add-blog',
-  data () {
-    return {
-      id:this.$route.params.id,
-      blog:{},
-      authors:["Hemiah","Henry","Bucky"],
-      submmited:false
-    }
-  },
-  methods:{
-    fetchData(){
-      // console.log(this.id);
-      this.$http.get('https://vuedemo-b1233.firebaseio.com/posts/' + this.id + ".json")
-          .then(response => {
-            // console.log(response.body);
-            this.blog = response.body;
-          })
-    },
-    post:function(){
-      this.$http.put('https://vuedemo-b1233.firebaseio.com/posts/' + this.id + ".json",this.blog)
-          .then(function(data){
-            console.log(data);
-            this.submmited = true;
-          });
-    }
-  },
-  created(){
-    this.fetchData();
-  }
-}
+import stroe from 'vuex'
+	import { mapState,mapActions} from 'vuex'
+	export default{
+		name:"single-blog",
+		data(){
+			return{
+				id:this.$route.params.id,
+				title:this.$store.state.blogTitle,
+				content:this.$store.state.blogContent,
+				categories:this.$store.state.blogCategories,
+				author:this.$store.state.blogAuthor,
+				authors:["Hemiah","Henry","Bucky"] 
+			}
+		},
+		/* methods:{
+			...mapActions([
+				'getNews'
+			])
+		}, */
+		computed:{
+			...mapState([
+				'blogID',
+				'blogTitle',
+				'blogContent',
+				'blogCategories',
+				'blogAuthor',
+				'blogCreatedAt'
+			])
+		},
+		created(){
+			this.$store.dispatch('getNews',this.id);
+		},
+		methods:{
+				editMod:function(){
+					console.log(this.title,this.content,this.categories,this.author);
+						this.$store.dispatch('editMod',[this.id,this.title,this.content,this.categories,this.author]).then(res=>{
+							this.$router.push({path:'/'}); 
+						})
+				}
+		},
+		watch:{
+			blogTitle(){
+				this.title = this.$store.state.blogTitle
+			},
+			blogContent(){
+				this.content = this.$store.state.blogContent
+			},
+			blogCategories(){
+				this.categories = this.$store.state.blogCategories
+			},
+			blogAuthor(){
+				this.author = this.$store.state.blogAuthor
+			}
+		},
+	}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

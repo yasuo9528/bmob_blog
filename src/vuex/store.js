@@ -10,6 +10,7 @@ const state = {
 		blogConent        博客内容
 		blogCategories    博客分类
 		blogAuthor        博客作者
+		blogCreatedAt     博客创作时间
 	 */
 	blogID:'',
 	blogTitle:'',
@@ -18,7 +19,8 @@ const state = {
 	blogAuthor:'',
 	blogCreatedAt:'',
 	// -- content 首页文章条目 
-	getCont: ''
+	getCont: '',
+	pushShow:false
 }
 
 const mutations = {
@@ -33,7 +35,14 @@ const mutations = {
 		query.descending('createdAt')
 		query.find({
 				success: results => {
-						state.getCont = results
+						state.getCont = results;
+						//重置博客详细
+						state.blogID = '';
+						state.blogTitle = '';
+						state.blogContent = '';
+						state.blogCategories = '';
+						state.blogAuthor = '';
+						state.blogCreatedAt='';
 				},
 				error: error => {
 						console.log("查询失败: " + error.code + " " + error.message);
@@ -48,7 +57,6 @@ const mutations = {
 				state.blogID = result.id;
 				state.blogTitle = result.get("newTitle");
 				state.blogContent = result.get("newContent");
-				
 				state.blogCategories = result.get("newCategories")
 				state.blogAuthor = result.get("newAuthors");
 				state.blogCreatedAt=result.createdAt;
@@ -57,7 +65,73 @@ const mutations = {
 				
 		}
 		})
-	}
+	},
+	pushNews: (state,type) => {
+			if(type[0] == '' && type[1] == ''){
+				return;
+			}
+			console.log(type)
+			var Diary = Bmob.Object.extend("news");
+			var diary = new Diary();
+			diary.set("newTitle",type[0]);
+			diary.set("newContent",type[1]);
+			diary.set("newCategories",type[2]);
+			diary.set("newAuthors",type[3]);
+			diary.save(null, {
+			success: function(result) {
+					if(!result) return
+			},
+			error: function(result, error) {
+				
+			}
+			});
+	},
+	removeNew: (state,type) => {
+		var Diary = Bmob.Object.extend("news");
+		var query = new Bmob.Query(Diary);
+		query.get(type, {
+			success: function(object) {
+				// The object was retrieved successfully.
+				object.destroy({
+					success: function(deleteObject) {
+						for(let i in state.getCont){
+								if(state.getCont[i].id == deleteObject.id){
+									state.getCont.splice(i,1)
+								}
+						}
+						console.log('删除成功');
+					},
+					error: function(object, error) {
+						error ? console.log('删除失败') : '';
+					}
+				});
+			},
+			error: function(object, error) {
+				error ? console.log("query object fail") : '';
+			}
+		});
+	},
+	editMod: (state,type) => {
+		var Diary = Bmob.Object.extend("news");
+		var query = new Bmob.Query(Diary);
+		query.get(type[0], {
+				success: function(result) {
+						for(let i in state.getCont){	
+							console.log(state.getCont[i])
+							state.getCont[i].attributes.newTitle = type[1]
+							state.getCont[i].attributes.newContent = type[2]	
+						}
+						result.set('newTitle', type[1]);
+						result.set('newContent', type[2]);
+						result.set('newCategories', type[3]);
+						result.set('newAuthors', type[4]);
+						result.save();
+				},
+				error: function(object, error) {
+						state.mesState='err';state.mesTitle='错误'
+				}
+		});
+	},
 }
 
 const actions = {
@@ -68,7 +142,21 @@ const actions = {
 	getNews:({commit},type)=>{
 		commit('login')
 		commit('getNews',type)
-	}
+	},
+	pushNews: ({commit},type,state) => {
+		commit('login')
+		commit('pushNews',type)
+	},
+	// 删除文章
+	removeNew: ({commit},type) => {
+		commit('login')
+		commit('removeNew',type)
+	},
+	// 编辑文章
+	editMod: ({commit},type) => {
+		commit('login')
+		commit('editMod',type)
+	},
 }
 
 export default new Vuex.Store({
