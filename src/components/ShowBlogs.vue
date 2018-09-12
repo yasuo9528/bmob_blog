@@ -19,7 +19,7 @@
 
 <script>
 import stroe from 'vuex'
-import { mapState,mapActions} from 'vuex'
+import { mapState,mapActions,mapGetters} from 'vuex'
 export default {
   name: 'show-blogs',
   data(){
@@ -28,14 +28,16 @@ export default {
   	}
   },
 	methods:{
-			/* ...mapActions([
+			...mapActions([
 				'getallState'
-			]) */
+			])
 	},
   computed:{
 			...mapState([
 					'getCont'
-			])
+			]),
+			/* ...mapGetters(['getCont',
+			]) */
   },
 	created(){
 			this.$store.dispatch('getallState',{

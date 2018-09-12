@@ -22,7 +22,9 @@ const state = {
 	getCont: '',
 	pushShow:false
 }
-
+const getters = {
+        //getCont: state => state.getCont
+    }
 const mutations = {
 	login:()=>{
 		Bmob.initialize("3cd7c28fa3645af69208f1de1c15b702", "d662d7f0a8e85b40cf225579c1f97496");
@@ -116,11 +118,16 @@ const mutations = {
 		var query = new Bmob.Query(Diary);
 		query.get(type[0], {
 				success: function(result) {
-						for(let i in state.getCont){	
-							console.log(state.getCont[i])
-							state.getCont[i].attributes.newTitle = type[1]
-							state.getCont[i].attributes.newContent = type[2]	
-						}
+						/* for(let i in state.getCont){	
+							
+							if(state.getCont[i].id == type[0]){
+								 console.log(type[1])
+								
+							state.getCont[i].attributes.newTitle = type[1];
+							state.getCont[i].attributes.newContent = type[2];
+							
+							}
+						} */
 						result.set('newTitle', type[1]);
 						result.set('newContent', type[2]);
 						result.set('newCategories', type[3]);
@@ -162,5 +169,6 @@ const actions = {
 export default new Vuex.Store({
 	state,
 	mutations,
-	actions
+	actions,
+	getters
 })

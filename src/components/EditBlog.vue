@@ -20,7 +20,7 @@
       </div>
       <label>作者:</label>
       <select v-model="author">
-        <option v-for="author in authors">
+        <option v-for="(author,index) in authors" :key="index">
           {{author}}
         </option>
       </select>
@@ -65,9 +65,9 @@ import stroe from 'vuex'
 		methods:{
 				editMod:function(){
 					console.log(this.title,this.content,this.categories,this.author);
-						this.$store.dispatch('editMod',[this.id,this.title,this.content,this.categories,this.author]).then(res=>{
-							this.$router.push({path:'/'}); 
-						})
+						this.$store.dispatch('editMod',[this.id,this.title,this.content,this.categories,this.author])/* .then(res=>{	
+						this.$router.push({path: '/blog/'+this.id}) 
+						})*/
 				}
 		},
 		watch:{
