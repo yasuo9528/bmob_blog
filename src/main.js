@@ -7,12 +7,19 @@ import VueRouter from 'vue-router'
 import store from "./vuex/store"
 import App from './App'
 import Routes from './routes'
-
+//css
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import NormailizeCss from 'normalize.css'
+//import 'vue-awesome/icons'
+//import Icon from 'vue-awesome/components/Icon'
 
 Vue.config.productionTip = false
 
 Vue.use(VueResource)
 Vue.use(VueRouter)
+Vue.use(ElementUI)
+//Vue.component('icon', Icon)
 // Vue.use(Element)
 
 // 自定义指令
@@ -25,14 +32,14 @@ Vue.use(VueRouter)
 Vue.directive('theme',{
 	bind(el,binding,vnode){
 		if (binding.value == 'wide') {
-			el.style.maxWidth = "1260px";
+			el.style.width = "800px";
+			el.style.maxWidth = "800px";
 		} else if (binding.value == 'narrow') {
 			el.style.maxWidth = "560px";
 		}
 
-		if (binding.arg == 'column') {
-			el.style.background = "#6677cc";
-			el.style.padding = '20px';
+		if (binding.arg == 'position') {
+			el.style.margin = '0 auto';
 		}
 	}
 })

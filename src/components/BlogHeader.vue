@@ -1,12 +1,10 @@
 <template>
-	<nav>
-		<ul>
-			<li>
-				<router-link to="/" exact>博客</router-link>
-				<router-link to="/add" exact>写博客</router-link>
-			</li>
-		</ul>
-	</nav>
+	<el-menu :default-active="$route.path" class="el-menu-demo" mode="horizontal"
+	background-color="#545c64" text-color="#fff" active-text-color="#ffd04b" router>
+		<el-menu-item index="/">博客</el-menu-item>
+		<el-menu-item index="/add">写博客</el-menu-item>
+		
+	</el-menu>
 </template>
 
 <script>
@@ -16,31 +14,5 @@
 </script>
 
 <style scoped>
-ul{
-	list-style-type: none;
-	text-align: center;
-	margin: 0;
-}
-li{
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a{
-  color: #fff;
-  text-decoration: none;
-  padding: 12px;
-  border-radius: 5px;
-}
-nav{
-	background: crimson;
-	padding: 30px 0;
-	margin-bottom: 40px;
-}
-
-.router-link-active{
-	background: rgba(255,255,255,0.8);
-	color: #444;
-}
 
 </style>

@@ -1,32 +1,49 @@
 <template>
-  <div id="add-blog">
-    <h2>添加博客</h2>
-    <form>
-      <label>博客标题</label>
-      <input type="text" v-model="blog.pushTitle" required />
-
-      <label>博客内容</label>
-      <textarea v-model="blog.pushCont"></textarea>
-
-      <div id="checkboxes">
-        <label>Vue.js</label>
-        <input type="checkbox" value="Vue.js" v-model="blog.categories">
-        <label>Node.js</label>
-        <input type="checkbox" value="Node.js" v-model="blog.categories">
-        <label>React.js</label>
-        <input type="checkbox" value="React.js" v-model="blog.categories">
-        <label>Angular4</label>
-        <input type="checkbox" value="Angular4" v-model="blog.categories">
-      </div>
-      <label>作者:</label>
-      <select v-model="blog.author">
-        <option v-for="author in authors">
-          {{author}}
-        </option>
-      </select>
-      <button @click="addNews">添加博客</button>
-    </form>
-  </div>
+	<el-card id="add-blog" v-theme:position="'wide'">
+		<el-row>
+			<el-col :span="18" class="breadcrumb">
+				<el-breadcrumb separator="/">
+					<el-breadcrumb-item :to="{ path: '/' }">博客</el-breadcrumb-item>
+					<el-breadcrumb-item>新增博客</el-breadcrumb-item>
+				</el-breadcrumb>
+			</el-col>
+			<el-row type="flex" justify="end">
+			<el-col :span="6">
+				<router-link :to="'/'"><el-button type="primary" size="mini" icon="el-icon-back"></el-button></router-link> 
+			</el-col>
+			</el-row>
+		</el-row>
+		<h1>博客总览</h1>
+		<el-form :model="blog" :rules="rules" ref="blog" label-width="80px">
+			<el-form-item label="博客标题" prop="pushTitle">
+				<el-input v-model="blog.pushTitle"></el-input>
+			</el-form-item>
+			<el-form-item label="博客内容" prop="pushCont">
+				<el-input type="textarea" :rows="7" v-model="blog.pushCont"></el-input>
+			</el-form-item>
+			<el-form-item label="所属技术" prop="categories">
+				<el-checkbox-group v-model="blog.categories">
+					<el-checkbox label="Vue.js" name="type"></el-checkbox>
+					<el-checkbox label="Node.js" name="type"></el-checkbox>
+					<el-checkbox label="React.js" name="type"></el-checkbox>
+					<el-checkbox label="Angular4" name="type"></el-checkbox>
+				</el-checkbox-group>
+			</el-form-item>
+			<el-form-item label="作者" prop="author">
+				<el-select v-model="blog.author" placeholder="请选择作者">
+					<el-option
+						v-for="(author,index) in authors"
+						:key="index"
+						:label="author"
+						:value="author"
+					></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" :plain="true" @click="addNews('blog')">立即创建</el-button>
+			</el-form-item>
+		</el-form>
+	</el-card>  
 </template>
 
 <script>
@@ -44,6 +61,22 @@ export default {
         author:""
       },
       authors:["Hemiah","Henry","Bucky"],
+			rules: {
+				pushTitle: [
+							{ required: true, message: '请输入博客标题', trigger: 'blur' },
+							{ min: 3, message: '长度大于3个字符', trigger: 'blur' }
+						],
+				pushCont:[
+							{ required: true, message: '请输入博客内容', trigger: 'blur' },
+							{ min: 3, message: '长度大于3个字符', trigger: 'blur' }
+						],	
+				categories: [
+					{ type: 'array', required: true, message: '请至少选择一个', trigger: 'change' }
+						],
+				author: [
+							{ required: true, message: '请选择作者', trigger: 'change' }
+						],
+			}
     }
   },
 	computed:{
@@ -53,11 +86,23 @@ export default {
 	},
   methods:{
 			// 发布
-			addNews:function(){
-					this.$store.dispatch('pushNews',[this.blog.pushTitle,this.blog.pushCont,this.blog.categories,this.blog.author])
-					.then(res=>{
-						this.$router.push({path:'/'}); 
-					})
+			addNews:function(formName){
+					this.$refs[formName].validate((valid) => {
+						if (valid) {
+							this.$store.dispatch('pushNews',[this.blog.pushTitle,this.blog.pushCont,this.blog.categories,this.blog.author])
+							.then(res=>{
+								this.$message({
+									message: '您的博客发布成功',
+									type: 'success'
+								});
+								this.$router.push({path:'/'}); 
+							})
+						} else {
+							console.log('error submit!!');
+							return false;
+						}
+					});
+					
 			}
   }
 }
@@ -65,61 +110,5 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#add-blog *{
-  box-sizing: border-box;
-}
-
-#add-blog{
-  margin: 20px auto;
-  max-width: 600px;
-  padding: 20px;
-}
-
-label{
-  display: block;
-  margin: 20px 0 10px;
-}
-
-input[type="text"],textarea,select{
-  display: block;
-  width: 100%;
-  padding: 8px;
-}
-
-textarea{
-  height: 200px;
-}
-
-#checkboxes label{
-  display: inline-block;
-  margin-top: 0;
-}
-
-#checkboxes input{
-  display: inline-block;
-  margin-right: 10px;
-}
-
-button{
-  display: block;
-  margin: 20px 0;
-  background: crimson;
-  color: #fff;
-  border: 0;
-  padding: 14px;
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-#preview{
-  padding: 10px 20px;
-  border: 1px dotted #ccc;
-  margin: 30px 0;
-}
-
-h3{
-  margin-top: 10px;
-}
 
 </style>

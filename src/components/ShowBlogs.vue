@@ -1,20 +1,23 @@
 <template>
-  <div v-theme:column="'narrow'" id="show-blogs">
-    <h1>博客总览</h1>
-    <input type="text" v-model="search" placeholder="搜索">
-    <div v-for="(blog,index) in getCont" :key="index" class="single-blog">
-    	<router-link v-bind:to="'/blog/' + blog.id">
-        <h2 v-rainbow>{{blog.attributes.newTitle}}</h2>
-      </router-link>
-
-    	<article>
-    		{{blog.attributes.newContent}}
-    	</article>
-			<p v-for="(f,index) in blog.attributes.newCategories" :key="index">
-					{{f}}
-			</p>
-    </div>
-  </div>
+	<el-card v-theme:position="'wide'">
+		<h1>博客总览</h1>
+		<el-row>
+			<el-col :span="12" :offset="12">
+				<el-input placeholder="搜索Blog" suffix-icon="el-icon-search" v-model="search" class="search"></el-input>
+			</el-col>
+		</el-row>
+			<el-card class="box-card" v-for="(blog,index) in getCont" :key="index"  shadow="hover">
+					<router-link v-bind:to="'/blog/' + blog.id"><h3 v-rainbow>{{blog.attributes.newTitle}}</h3></router-link>
+					<div class="text item">
+						{{blog.attributes.newContent}}
+					</div>
+					<el-row type="flex" justify="start" class="card-tag">
+						<el-col :span="12">
+							<el-tag type="success" size="mini" v-for="(f,index) in blog.attributes.newCategories" :key="index">{{f}}</el-tag>
+						</el-col>
+					</el-row>
+			</el-card>
+	</el-card>
 </template>
 
 <script>
@@ -34,7 +37,7 @@ export default {
 	},
   computed:{
 			...mapState([
-					'getCont'
+					'getCont',
 			]),
 			/* ...mapGetters(['getCont',
 			]) */
@@ -52,7 +55,7 @@ export default {
   directives:{
   	'rainbow':{
   		bind(el,binding,vnode){
-  			// el.style.color = "#" + Math.random().toString(16).slice(2,8);
+				el.style.color = "#" + Math.random().toString(16).slice(2,8);
   		}
   	}
   }
@@ -60,29 +63,17 @@ export default {
 </script>
 
 <style>
-#show-blogs{
-	max-width: 800px;
-	margin: 0 auto;
+.box-card,.search{
+	margin-bottom: 20px;
 }
-
-.single-blog{
-	padding: 20px;
-	margin: 20px 0;
-	box-sizing: border-box;
-	background: #eee;
-  border: 1px dotted #aaa;
+.card-tag {
+	margin-top: 10px;
 }
-
-#show-blogs a{
-  color: #444;
-  text-decoration: none;
+.card-tag .el-tag{
+	margin-right: 10px;
 }
-
-input[type="text"]{
-  padding: 8px;
-  width: 100%;
-  box-sizing: border-box;
+a{
+	text-decoration: none !important;
 }
-
 
 </style>

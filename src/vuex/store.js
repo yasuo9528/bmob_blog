@@ -116,7 +116,7 @@ const mutations = {
 	editMod: (state,type) => {
 		var Diary = Bmob.Object.extend("news");
 		var query = new Bmob.Query(Diary);
-		query.get(type[0], {
+		query.get(type.id, {
 				success: function(result) {
 						/* for(let i in state.getCont){	
 							
@@ -128,10 +128,10 @@ const mutations = {
 							
 							}
 						} */
-						result.set('newTitle', type[1]);
-						result.set('newContent', type[2]);
-						result.set('newCategories', type[3]);
-						result.set('newAuthors', type[4]);
+						result.set('newTitle', type.blog.title);
+						result.set('newContent', type.blog.content);
+						result.set('newCategories', type.blog.categories);
+						result.set('newAuthors', type.blog.authors);
 						result.save();
 				},
 				error: function(object, error) {

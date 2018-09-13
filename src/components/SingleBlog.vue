@@ -1,18 +1,39 @@
 <template>
-	<div id="single-blog">
-		<h1>{{blogTitle}}</h1>
-		<article>{{blogContent}}</article>
-		<p>作者: {{blogAuthor}}</p>
-		<p>创作时间: {{blogCreatedAt}}</p>
-		<p>分类:</p>
-		<ul>
-			<li v-for="category in blogCategories">
-				{{category}}
-			</li>
-		</ul>
-		<button @click="removeNew(id)">删除</button>
-		<router-link :to="'/edit/' + id">编辑</router-link>
-	</div>
+	<el-card class="box-card clearfix" v-theme:position="'wide'">
+		<el-row>
+			<el-col :span="18" class="breadcrumb">
+				<el-breadcrumb separator="/">
+					<el-breadcrumb-item :to="{ path: '/' }">博客</el-breadcrumb-item>
+					<el-breadcrumb-item>博客详情</el-breadcrumb-item>
+				</el-breadcrumb>
+			</el-col>
+			<el-row type="flex" justify="end">
+			<el-col :span="6">
+				<router-link :to="'/'"><el-button type="primary" size="mini" icon="el-icon-back"></el-button></router-link> 
+			</el-col>
+			</el-row>
+		</el-row>
+		<h2>{{blogTitle}}</h2>
+		<hr>
+		<el-row type="flex" justify="start">
+			<el-col :span="12">
+				<el-tag size="mini" type="info">{{blogAuthor}}</el-tag>
+				<el-tag size="mini" type="success">{{blogCreatedAt}}</el-tag>
+				<el-tag size="mini">
+					<span v-for="category in blogCategories">
+						{{category}}
+					</span>
+				</el-tag>
+			</el-col>
+		</el-row>
+		<p class="text-regular">{{blogContent}}</p>
+		<el-row type="flex" justify="start">
+			<el-col :span="12" :offset="20">
+			<router-link :to="'/edit/' + id"><el-button type="primary" size="mini" icon="el-icon-edit"></el-button></router-link>
+			<el-button type="danger" size="mini" icon="el-icon-delete" @click="removeNew(id)"></el-button>
+		</el-col>
+		</el-row>	  
+	</el-card>
 </template>
 
 <script>

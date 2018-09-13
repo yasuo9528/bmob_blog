@@ -1,9 +1,13 @@
 <template>
   <div id="app">
-    <!-- <add-blog></add-blog> -->
-    <!-- <show-blogs></show-blogs> -->
-    <blog-header></blog-header>
-    <router-view></router-view> 
+    <el-container>
+    	<el-header class="header">
+    		<blog-header></blog-header>
+    	</el-header>
+    	<el-main>
+    		<router-view></router-view> 
+    	</el-main>
+    </el-container> 
   </div>
 </template>
 
@@ -21,5 +25,7 @@ export default {
 </script>
 
 <style>
-
+.header {
+	background-color: #545c64;
+}
 </style>

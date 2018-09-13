@@ -1,32 +1,50 @@
 <template>
-  <div id="add-blog">
-    <h2>编辑博客</h2>
-    <form>
-      <label>博客标题</label>
-      <input type="text" v-model="title" required />
-
-      <label>博客内容</label>
-      <textarea v-model="content"></textarea>
-
-      <div id="checkboxes">
-        <label>Vue.js</label>
-        <input type="checkbox" value="Vue.js" v-model="categories">
-        <label>Node.js</label>
-        <input type="checkbox" value="Node.js" v-model="categories">
-        <label>React.js</label>
-        <input type="checkbox" value="React.js" v-model="categories">
-        <label>Angular4</label>
-        <input type="checkbox" value="Angular4" v-model="categories">
-      </div>
-      <label>作者:</label>
-      <select v-model="author">
-        <option v-for="(author,index) in authors" :key="index">
-          {{author}}
-        </option>
-      </select>
-      <button @click="editMod()">编辑博客</button>
-    </form>
-  </div>
+	<el-card id="edit-blog" v-theme:position="'wide'">
+		<el-row>
+			<el-col :span="18" class="breadcrumb">
+				<el-breadcrumb separator="/">
+					<el-breadcrumb-item :to="{ path: '/' }">博客</el-breadcrumb-item>
+					<el-breadcrumb-item :to="{ path: '/blog/'+id }">博客详情</el-breadcrumb-item>
+					<el-breadcrumb-item>编辑博客</el-breadcrumb-item>
+				</el-breadcrumb>
+			</el-col>
+			<el-row type="flex" justify="end">
+			<el-col :span="6">
+				<router-link :to="'/blog/'+id"><el-button type="primary" size="mini" icon="el-icon-back"></el-button></router-link> 
+			</el-col>
+			</el-row>
+		</el-row>
+		<h1>编辑博客</h1>
+		<el-form :model="blog" :rules="rules" ref="blog" label-width="80px">
+			<el-form-item label="博客标题" prop="title">
+				<el-input v-model="blog.title"></el-input>
+			</el-form-item>
+			<el-form-item label="博客内容" prop="content">
+				<el-input type="textarea" :rows="7" v-model="blog.content"></el-input>
+			</el-form-item>
+			<el-form-item label="所属技术" prop="categories">
+				<el-checkbox-group v-model="blog.categories">
+					<el-checkbox label="Vue.js" name="type"></el-checkbox>
+					<el-checkbox label="Node.js" name="type"></el-checkbox>
+					<el-checkbox label="React.js" name="type"></el-checkbox>
+					<el-checkbox label="Angular4" name="type"></el-checkbox>
+				</el-checkbox-group>
+			</el-form-item>
+			<el-form-item label="作者" prop="author">
+				<el-select v-model="blog.author" placeholder="请选择作者">
+					<el-option
+						v-for="(author,index) in authors"
+						:key="index"
+						:label="author"
+						:value="author"
+					></el-option>
+				</el-select>
+			</el-form-item>
+			<el-form-item>
+				<el-button type="primary" :plain="true" @click="editMod('blog')">立即编辑</el-button>
+			</el-form-item>
+		</el-form>
+	</el-card>
 </template>
 
 <script>
@@ -36,12 +54,30 @@ import stroe from 'vuex'
 		name:"single-blog",
 		data(){
 			return{
+				blog:{
+					title:this.$store.state.blogTitle,
+					content:this.$store.state.blogContent,
+					categories:this.$store.state.blogCategories,
+					author:this.$store.state.blogAuthor
+				},
 				id:this.$route.params.id,
-				title:this.$store.state.blogTitle,
-				content:this.$store.state.blogContent,
-				categories:this.$store.state.blogCategories,
-				author:this.$store.state.blogAuthor,
-				authors:["Hemiah","Henry","Bucky"] 
+				authors:["Hemiah","Henry","Bucky"],
+				rules: {
+					title: [
+								{ required: true, message: '请输入博客标题', trigger: 'blur' },
+								{ min: 3, message: '长度大于3个字符', trigger: 'blur' }
+							],
+					content:[
+								{ required: true, message: '请输入博客内容', trigger: 'blur' },
+								{ min: 3, message: '长度大于3个字符', trigger: 'blur' }
+							],	
+					categories: [
+						{ type: 'array', required: true, message: '请至少选择一个', trigger: 'change' }
+							],
+					author: [
+								{ required: true, message: '请选择作者', trigger: 'change' }
+							],
+				}
 			}
 		},
 		/* methods:{
@@ -63,25 +99,37 @@ import stroe from 'vuex'
 			this.$store.dispatch('getNews',this.id);
 		},
 		methods:{
-				editMod:function(){
-					console.log(this.title,this.content,this.categories,this.author);
-						this.$store.dispatch('editMod',[this.id,this.title,this.content,this.categories,this.author])/* .then(res=>{	
-						this.$router.push({path: '/blog/'+this.id}) 
-						})*/
+				editMod:function(formName){
+						this.$refs[formName].validate((valid) => {
+							if (valid) {
+								
+								this.$store.dispatch('editMod',{ blog:this.blog})
+								.then(res=>{	
+									this.$message({
+										message: '您的博客编辑成功',
+										type: 'success'
+									});
+									//this.$router.push({path: '/blog/'+this.id}) 
+								})
+							} else {
+								console.log('error submit!!');
+								return false;
+							}
+						});
 				}
 		},
 		watch:{
 			blogTitle(){
-				this.title = this.$store.state.blogTitle
+				this.blog.title = this.$store.state.blogTitle
 			},
 			blogContent(){
-				this.content = this.$store.state.blogContent
+				this.blog.content = this.$store.state.blogContent
 			},
 			blogCategories(){
-				this.categories = this.$store.state.blogCategories
+				this.blog.categories = this.$store.state.blogCategories
 			},
 			blogAuthor(){
-				this.author = this.$store.state.blogAuthor
+				this.blog.author = this.$store.state.blogAuthor
 			}
 		},
 	}
@@ -89,62 +137,6 @@ import stroe from 'vuex'
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-#add-blog *{
-  box-sizing: border-box;
-}
-
-#add-blog{
-  margin: 20px auto;
-  max-width: 600px;
-  padding: 20px;
-}
-
-label{
-  display: block;
-  margin: 20px 0 10px;
-}
-
-input[type="text"],textarea,select{
-  display: block;
-  width: 100%;
-  padding: 8px;
-}
-
-textarea{
-  height: 200px;
-}
-
-#checkboxes label{
-  display: inline-block;
-  margin-top: 0;
-}
-
-#checkboxes input{
-  display: inline-block;
-  margin-right: 10px;
-}
-
-button{
-  display: block;
-  margin: 20px 0;
-  background: crimson;
-  color: #fff;
-  border: 0;
-  padding: 14px;
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-#preview{
-  padding: 10px 20px;
-  border: 1px dotted #ccc;
-  margin: 30px 0;
-}
-
-h3{
-  margin-top: 10px;
-}
 
 </style>
 
